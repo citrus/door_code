@@ -11,6 +11,8 @@ module DoorCode
       @code = parse_code(options[:code])
     end
     
+    # Ensures the code is good & valid, otherwise
+    # reverts to the default
     def parse_code code
       parsed_code = code.gsub(/\D/, '')
       if parsed_code == code
@@ -23,43 +25,92 @@ module DoorCode
       end
       parsed_code
     end
+    
+    def cookie_name
+      'door_code'
+    end
+    
+    # Rack::Request wrapper around @env
+    def request
+      @request ||= Rack::Request.new(@env)
+    end
+    
+    # Rack::Response object with which to respond with
+    def response
+      @response ||= Rack::Response.new
+    end
+    
+    # Is the request verb POST?
+    def post?
+      request.request_method == 'POST'
+    end
+    
+    # Was the request called via AJAX?
+    def xhr?
+      @env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
+    end
+    
+    # Code supplied from user
+    def supplied_code
+      request.params['code']
+    end
+    
+    # Is the supplied code vaid for the current area
+    def valid_code? code
+      @code == code
+    end
+    
+    # Check if the supplied code is valid;
+    # Either sets a confirming cookie and Success message
+    # or delete any door code cookie and set Failure message
+    def validate_code!
+      valid_code?(supplied_code) ? confirm! : unconfirm!
+    end
+    
+    # Is there a valid code for the area set in the cookie
+    def confirmed?
+      request.cookies[cookie_name] && valid_code?(request.cookies[cookie_name])
+    end
+    
+    # Set a cookie for the correct value (server value may change)
+    # Also set up Success message
+    def confirm!
+      response.write 'success'
+      response.set_cookie(cookie_name, {:value => supplied_code, :path => "/"})
+    end
+    
+    # Delete and invalid cookies
+    # Also set up Failure message
+    def unconfirm!
+      response.write 'failure'
+      response.delete_cookie(supplied_code)
+    end
+    
+    def code_length
+      @code.length.to_s
+    end
+    
+    def build_rack_objects
+      @request = Rack::Request.new(@env)
+      @response = Rack::Response.new
+    end
 
     # Where the magic happens...
     def call env
-      # return @app.call(env) if confirmed?
-      
       @env = env
-      request = Rack::Request.new(env)
-      post = request.request_method == 'POST'
-      xhr = env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
-      path = Rack::Utils.unescape(request.path_info)
-      if path.include?('.')
-        ext = path.split('.')[-1]
-      else
-        path = (path[-1] == '/' ? "#{path}index.html" : "#{path}/index.html")
-        ext = 'html'
-      end
-      mime_type = Rack::Mime.mime_type(".#{ext}")
-      response = Rack::Response.new
+      build_rack_objects
       
-      if post
+      return @app.call(env) if confirmed?
+      p 'Loading DoorCode::RestrictedAccess'
+      
+      if post?
         supplied_code = request.params['code']
-        response['Content-Type'] = 'text/javascript' if xhr
-        response.write supplied_code == @code ? "success" : "failure"
+        response['Content-Type'] = 'text/javascript' if xhr?
+        validate_code! # Validate the user's code and set a cookie if valid
       else
-        if xhr # Means we're trying to fetch the code length
-          response["Content-Type"] = 'text/javascript'
-          response.write @code.length.to_s
-        else
-          response["Content-Type"] = mime_type
-          begin
-            # Find the DoorCode content (restricted to the gem directory)
-            response.write ::File.read(::File.dirname(__FILE__) + path)
-          rescue # File not found - simply returns basic 404 (need to enhance this)
-            response.write '404!'
-            response.status = 404
-          end
-        end
+        index = ::File.read(::File.dirname(__FILE__) + '/index.html')
+        index_with_code_length = index.gsub(/\{\{codeLength\}\}/, code_length)
+        response.write index_with_code_length
       end
       
       # Render response
