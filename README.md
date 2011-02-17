@@ -8,11 +8,11 @@ Install with Bundler:
     
 In config.ru:
 
-    use Rack::DoorCode::RestrictedAccess, :code => '12345'
+    use DoorCode::RestrictedAccess, :code => '12345'
     
 Or in application.rb (Rails3) or environment.rb (Rails2):
 
-    config.middleware.use Rack::DoorCode::RestrictedAccess, :code => '12345'
+    config.middleware.use DoorCode::RestrictedAccess, :code => '12345'
 
 ## Notes
 
