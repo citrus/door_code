@@ -1,7 +1,9 @@
-html, body { margin: 0; padding: 50px 0 0 0; }
+html, body { margin: 0; padding: 0; }
 html { background: black url(../img/background.jpg) center top no-repeat; }
 
 .clear { clear: both; }
+
+* { outline: none; }
 
 .preload {
   position: absolute;
@@ -12,84 +14,165 @@ html { background: black url(../img/background.jpg) center top no-repeat; }
   width: 1px;
 }
 
-#container {
-  width: 508px; height: 608px;
-  margin: 0 auto; padding: 0;
-  background: url(../img/keypad/green-508x608.png) center center no-repeat;
+#keypad {
+  margin: 60px auto; padding: 1px;
+  height: 447px; width: 272px;
+  -webkit-border-radius: 10px;
 }
 
-#container.success { background-image: url(../img/keypad/blue-508x608.png); }
-#container.failure { background-image: url(../img/keypad/red-508x608.png); }
+#keypad #backlight {
+  height: 445px; width: 270px;
+  padding: 1px; margin: 0;
+  background: white;
+  -webkit-border-radius: 10px;
+}
 
-#container form {
-  width: 508px; height: 608px;
-  background: url(../img/keypad/frame-330x430.png) center center no-repeat;
+#keypad #backlight #frame {
+  padding: 10px; margin: 0;
+  height: 425px; width: 250px;
+  background: black;
+  -webkit-border-radius: 10px;
 }
 
 #display {
-  background: none;
-  height: 61px; width: 306px;
-  margin: 0 auto; padding: 12px 0 13px 0;
-  position: relative;
-  top: 101px;
-  text-align: center;
+  margin: 0 auto; padding: 1px;
+  height: 78px; width: 248px;
+  -webkit-border-radius: 5px;
 }
 
-#display div.msg {
-  text-indent: -9999px;
-  height: 61px; width: 100%;
-  margin: 0 auto; padding: 0;
-  display: none;
+#display .backlight {
+  height: 76px; width: 246px;
+  padding: 1px; margin: 0;
+  background: white;
+  -webkit-border-radius: 5px;
 }
 
-#display div.success { background: url(../img/led/success.png) center center no-repeat; }
-#display div.failure { background: url(../img/led/error.png) center center no-repeat; }
-
-#container.success #display div.success { display: block; }
-#container.failure #display div.failure { display: block; }
-
-#display div.num {
-  height: 61px; width: 32px;
-  text-indent: -9999px;
-  margin: 0 auto; padding: 0;
-  float: left; display: none;
+#display .backlight .led {
+  height: 60px; width: 230px;
+  margin: 0; padding: 8px;
+  overflow: hidden;
+  -webkit-border-radius: 5px;
 }
 
-#display div.one    { background: url(../img/led/1.png) center center no-repeat; }
-#display div.two    { background: url(../img/led/2.png) center center no-repeat; }
-#display div.three  { background: url(../img/led/3.png) center center no-repeat; }
-#display div.four   { background: url(../img/led/4.png) center center no-repeat; }
-#display div.five   { background: url(../img/led/5.png) center center no-repeat; }
-#display div.six    { background: url(../img/led/6.png) center center no-repeat; }
-#display div.seven  { background: url(../img/led/7.png) center center no-repeat; }
-#display div.eight  { background: url(../img/led/8.png) center center no-repeat; }
-#display div.nine   { background: url(../img/led/9.png) center center no-repeat; }
+#display img { display: none; margin: 0 3px 0 0; }
 
 #keys {
-  background: none;
-  height: 310px; width: 310px;
-  margin: 0 auto; padding: 0;
-  position: relative;
-  top: 113px;
+  margin: 10px auto; padding: 0;
+  height: 335px; width: 250px;
+  background: black;
+}
+
+#keys .key {
+  height: 78px; width: 78px;
+  float: left; padding: 1px;
+  margin: 0 5px 5px 0;
+  -webkit-border-radius: 6px;
+}
+
+#keys .key.right { margin-right: 0; }
+
+#keys .backlight {
+  height: 76px; width: 76px;
+  padding: 1px; margin: 0;
+  background: white;
+  -webkit-border-radius: 5px;
+}
+
+#keys .backlight .button {
+  height: 76px; width: 76px;
+  background: black;
+  -webkit-border-radius: 5px;
 }
 
 #keys a {
-  display: block;
-  text-indent: -9999px;
-  height: 100px; width: 100px;
-  background: none;
-  position: relative;
-  float: left;
-  margin: 5px 0 0 5px;
+  display: block; color: white;
+  height: 50px; width: 76px;
+  margin: 0; padding: 13px 0;
+  overflow: hidden;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: bold; font-size: 50px;
+  line-height: 50px;
+  text-align: center;
+  text-decoration: none;
+  background: black;
+  -webkit-border-radius: 5px;
 }
 
-#keys a.row-top { margin-top: 0; }
-#keys a.row-center {  }
-#keys a.row-bottom { margin-bottom: 0; }
+#keys .key.clear a, #keys .key.help a {
+  font-size: 20px;
+}
 
-#keys a.col-left { margin-left: 0; }
-#keys a.col-center {  }
-#keys a.col-right { margin-right: 0; }
+#keys a:hover, #keys a:focus { background: #111; }
+#keys a:active, #keys a.active { background: #222; }
 
-#keys a:hover { background: url(../img/opacity/33.png) }
-#keys a:active { background: url(../img/opacity/50.png) }
+/* Colour themes */
+
+.green,
+.green #display,
+.green #keys .key {
+  background: green;
+  -webkit-box-shadow: 0 0 5px green;
+}
+
+.green #display .backlight .led {
+  background: green;
+}
+
+.green #keys a {
+  -webkit-text-shadow: 0 0 5px green;
+  -webkit-text-stroke: 1px green;
+}
+
+.blue,
+.blue #display,
+.blue #keys .key {
+  background: blue;
+  -webkit-box-shadow: 0 0 5px blue;
+}
+
+.blue #display .backlight .led {
+  background: blue;
+}
+
+.blue #keys a {
+  -webkit-text-shadow: 0 0 5px blue;
+  -webkit-text-stroke: 1px blue;
+}
+
+.blue #display img.success { display: inline; }
+
+.red,
+.red #display,
+.red #keys .key {
+  background: red;
+  -webkit-box-shadow: 0 0 5px red;
+}
+
+.red #display .backlight .led {
+  background: red;
+}
+
+.red #keys a {
+  -webkit-text-shadow: 0 0 5px red;
+  -webkit-text-stroke: 1px red;
+}
+
+.red #display img.error { display: inline; }
+
+
+
+
+
+
+/*#display div.zero   { background: url(../img/led/0.png) right center no-repeat; }
+#display div.one    { background: url(../img/led/1.png) right center no-repeat; }
+#display div.two    { background: url(../img/led/2.png) right center no-repeat; }
+#display div.three  { background: url(../img/led/3.png) right center no-repeat; }
+#display div.four   { background: url(../img/led/4.png) right center no-repeat; }
+#display div.five   { background: url(../img/led/5.png) right center no-repeat; }
+#display div.six    { background: url(../img/led/6.png) right center no-repeat; }
+#display div.seven  { background: url(../img/led/7.png) right center no-repeat; }
+#display div.eight  { background: url(../img/led/8.png) right center no-repeat; }
+#display div.nine   { background: url(../img/led/9.png) right center no-repeat; }*/
+
+

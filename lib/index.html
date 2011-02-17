@@ -17,6 +17,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
   
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+  <script src="/assets/js/jquery.bind.js" type="text/javascript" charset="utf-8"></script>
   
   <script src="/assets/js/scripts.js" type="text/javascript" charset="utf-8"></script>
   <link rel="stylesheet" href="/assets/css/styles.css" type="text/css" media="screen" charset="utf-8">
@@ -26,13 +27,8 @@
 <body>
   
   <div class="preload">
-    <img src="/assets/img/background.jpg" />
-    <!-- Keypad -->
-    <img src="/assets/img/keypad/frame-330x430.png" />
-    <img src="/assets/img/keypad/green-508x608.png" />
-    <img src="/assets/img/keypad/blue-508x608.png" />
-    <img src="/assets/img/keypad/red-508x608.png" />
     <!-- LED -->
+    <img src="/assets/img/led/0.png" />
     <img src="/assets/img/led/1.png" />
     <img src="/assets/img/led/2.png" />
     <img src="/assets/img/led/3.png" />
@@ -45,41 +41,120 @@
     <img src="/assets/img/led/success.png" />
     <img src="/assets/img/led/error.png" />
   </div>
-
-  <div id="container">
-    <form action="/" method="post" autocomplete="off">
-      <div id="display">
-        <!-- Holder for the display -->
-        <div rel="1" class="num one">1</div>
-        <div rel="2" class="num two">2</div>
-        <div rel="3" class="num three">3</div>
-        <div rel="4" class="num four">4</div>
-        <div rel="5" class="num five">5</div>
-        <div rel="6" class="num six">6</div>
-        <div rel="7" class="num seven">7</div>
-        <div rel="8" class="num eight">8</div>
-        <div rel="9" class="num nine">9</div>
-        <!-- Messages -->
-        <div class="msg success">success</div>
-        <div class="msg failure">failure</div>
-        <div class="clear"></div>
-      </div>
+  
+  <div id="keypad" class="green">
+    <div id="backlight">
+      <div id="frame">
+        <div id="display">
+          <div class="backlight">
+            <div class="led">
+              <img rel="0" class="zero" src="/assets/img/led/0.png" />
+              <img rel="1" class="one" src="/assets/img/led/1.png" />
+              <img rel="2" class="two" src="/assets/img/led/2.png" />
+              <img rel="3" class="three" src="/assets/img/led/3.png" />
+              <img rel="4" class="four" src="/assets/img/led/4.png" />
+              <img rel="5" class="five" src="/assets/img/led/5.png" />
+              <img rel="6" class="six" src="/assets/img/led/6.png" />
+              <img rel="7" class="seven" src="/assets/img/led/7.png" />
+              <img rel="8" class="eight" src="/assets/img/led/8.png" />
+              <img rel="9" class="nine" src="/assets/img/led/9.png" />
+              <img class="success" src="/assets/img/led/success.png" />
+              <img class="error" src="/assets/img/led/error.png" />
+            </div>
+          </div>
+        </div> <!-- /display -->  
+    
+        <div id="keys">
+          <div class="key">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="one">1</a>
+              </div>
+            </div>
+          </div>
+          <div class="key">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="two">2</a>
+              </div>
+            </div>
+          </div>
+          <div class="key right">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="three">3</a>
+              </div>
+            </div>
+          </div>
+          <div class="key">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="four">4</a>
+              </div>
+            </div>
+          </div>
+          <div class="key">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="five">5</a>
+              </div>
+            </div>
+          </div>
+          <div class="key right">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="six">6</a>
+              </div>
+            </div>
+          </div>
+          <div class="key">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="seven">7</a>
+              </div>
+            </div>
+          </div>
+          <div class="key">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="eight">8</a>
+              </div>
+            </div>
+          </div>
+          <div class="key right">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="nine">9</a>
+              </div>
+            </div>
+          </div>
+          <div class="key clear">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="clear">Clear</a>
+              </div>
+            </div>
+          </div>
+          <div class="key">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="zero">0</a>
+              </div>
+            </div>
+          </div>
+          <div class="key help right">
+            <div class="backlight">
+              <div class="button">
+                <a href="#" rel="help">Help</a>
+              </div>
+            </div>
+          </div>
       
-      <div id="keys">
-        <!-- Holder for the 9 keys -->
-        <a href="#" class="one row-top col-left">1</a>
-        <a href="#" class="two row-top col-center">2</a>
-        <a href="#" class="three row-top col-right">3</a>
-        <a href="#" class="four row-center col-left">4</a>
-        <a href="#" class="five row-center col-center">5</a>
-        <a href="#" class="six row-center col-right">6</a>
-        <a href="#" class="seven row-bottom col-left">7</a>
-        <a href="#" class="eight row-bottom col-center">8</a>
-        <a href="#" class="nine row-bottom col-right">9</a>
-        <div class="clear"></div>
-      </div>
-    </form>
-  </div> <!-- end of #container -->
+          <div class="clear"></div>
+        </div> <!-- /keys -->
+      </div> <!-- /frame -->
+    </div> <!-- /backlight -->  
+  </div> <!-- /keypad -->
   
 </body>
 </html>

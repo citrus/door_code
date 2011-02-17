@@ -1,81 +1,69 @@
-module Rack
-  module DoorCode
-    class RestrictedAccess
-      
-      def initialize app, options={}
-        @app = app
-        @options = options
-        @code = @options[:code].to_s
-        # @domains = @options[:domains]
-        check_code
-      end
-      
-      def check_code
-        parsed_code = @code.gsub(/(\D|0)/i)
-        @code = '12345' unless @code == parsed_code
-      end
-      
-      def pre_confirmed?
-        @request.cookies['door_code'] == 'code:confirmed'
-      end
-  
-      # Where the magic happens...
-      def call env
-        @env = env
-        # Build the request object for inspection
-        @request = Rack::Request.new(env)
-        
-        # Is it a GET? POST? Other?
-        verb = @request.request_method
-        # Where is this request going?
-        path = Rack::Utils.unescape(@request.path_info)
-        # What type of resource is the request fetching?
-        # If no format is given, assume it's text/html (and that it's /index.html)
-        ext = path.split('.').size > 1 ? path.split('.')[-1] : 'html'
-        path = "#{path}index.html" if ext == 'html'
-        mime = Rack::Mime.mime_type(".#{ext}")
-          
-        if verb == "POST"
-          ajax = env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
-          confirmed = @request.params['code'] == @code
-          
-          if ajax
-            response = Rack::Response.new ["Success"], 200, {"Content-Type" => 'text/javascript'} if confirmed
-            response = Rack::Response.new ["Failure"], 200, {"Content-Type" => 'text/javascript'} if !confirmed
-          else
-            response = Rack::Response.new ["Redirecting"], 301, {"Location" => '/'}
-          end
-          
-          if confirmed
-            response.set_cookie('door_code', {:value => 'code:confirmed', :path => "/"})
-          else
-            response.delete_cookie('door_code')
-          end
-          
-          return response.finish
-        end
+module DoorCode
+  class RestrictedAccess
     
-        if pre_confirmed?
-          # This means the user has already confirmed the code, so
-          # we proceed to the app
-          status, headers, response = @app.call(env)
+    MIN_LENGTH = 3
+    MAX_LENGTH = 6
+    
+    DEFAULT_CODE = '12345'
+    
+    def initialize app, options={}
+      @app = app
+      @code = parse_code(options[:code])
+    end
+    
+    def parse_code code
+      parsed_code = code.gsub(/\D/, '')
+      if parsed_code == code
+        # Means the supplied code contains only digits, which is good
+        # Just need to check that the code length is valid
+        parsed_code = DEFAULT_CODE if code.length < MIN_LENGTH || code.length > MAX_LENGTH
+      else
+        # Means the supplied code contained non-digits, so revert to default
+        parsed_code = DEFAULT_CODE
+      end
+      parsed_code
+    end
+
+    # Where the magic happens...
+    def call env
+      # return @app.call(env) if confirmed?
+      
+      @env = env
+      request = Rack::Request.new(env)
+      post = request.request_method == 'POST'
+      xhr = env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
+      path = Rack::Utils.unescape(request.path_info)
+      if path.include?('.')
+        ext = path.split('.')[-1]
+      else
+        path = (path[-1] == '/' ? "#{path}index.html" : "#{path}/index.html")
+        ext = 'html'
+      end
+      mime_type = Rack::Mime.mime_type(".#{ext}")
+      response = Rack::Response.new
+      
+      if post
+        supplied_code = request.params['code']
+        response['Content-Type'] = 'text/javascript' if xhr
+        response.write supplied_code == @code ? "success" : "failure"
+      else
+        if xhr # Means we're trying to fetch the code length
+          response["Content-Type"] = 'text/javascript'
+          response.write @code.length.to_s
         else
-          # Otherwise, we fetch the resource using this file (door_code.rb) as the root
+          response["Content-Type"] = mime_type
           begin
-            file = ::File.read(::File.dirname(__FILE__) + path)
-            status, headers, response = 200, {"Content-Type" => mime}, [file]
+            # Find the DoorCode content (restricted to the gem directory)
+            response.write ::File.read(::File.dirname(__FILE__) + path)
           rescue # File not found - simply returns basic 404 (need to enhance this)
-            not_found(mime)
+            response.write '404!'
+            response.status = 404
           end
         end
-        
-        [status, headers, response]
-      end
-  
-      def not_found mime
-        status, headers, response = 404, {"Content-Type" => mime}, ["404!"]
       end
       
+      # Render response
+      return response.finish
     end
   end
 end
