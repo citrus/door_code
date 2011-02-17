@@ -19,8 +19,385 @@
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
   <script src="/assets/js/jquery.bind.js" type="text/javascript" charset="utf-8"></script>
   
-  <script src="/assets/js/scripts.js" type="text/javascript" charset="utf-8"></script>
-  <link rel="stylesheet" href="/assets/css/styles.css" type="text/css" media="screen" charset="utf-8">
+  <style type="text/css" charset="utf-8">
+    html, body { margin: 0; padding: 0; }
+    html { background: black url(../img/background.jpg) center top no-repeat; }
+
+    .clear { clear: both; }
+
+    * { outline: none; }
+
+    .preload {
+      position: absolute;
+      overflow: hidden;
+      left: -9999px;
+      top: -9999px;
+      height: 1px;
+      width: 1px;
+    }
+
+    #keypad {
+      margin: 60px auto; padding: 1px;
+      height: 447px; width: 272px;
+      -webkit-border-radius: 10px;
+    }
+
+    #keypad #backlight {
+      height: 445px; width: 270px;
+      padding: 1px; margin: 0;
+      background: white;
+      -webkit-border-radius: 10px;
+    }
+
+    #keypad #backlight #frame {
+      padding: 10px; margin: 0;
+      height: 425px; width: 250px;
+      background: black;
+      -webkit-border-radius: 10px;
+    }
+
+    #display {
+      margin: 0 auto; padding: 1px;
+      height: 78px; width: 248px;
+      -webkit-border-radius: 5px;
+    }
+
+    #display .backlight {
+      height: 76px; width: 246px;
+      padding: 1px; margin: 0;
+      background: white;
+      -webkit-border-radius: 5px;
+    }
+
+    #display .backlight .led {
+      height: 60px; width: 230px;
+      margin: 0; padding: 8px;
+      overflow: hidden;
+      -webkit-border-radius: 5px;
+    }
+
+    #display img { display: none; margin: 0 3px 0 0; }
+
+    #keys {
+      margin: 10px auto; padding: 0;
+      height: 335px; width: 250px;
+      background: black;
+    }
+
+    #keys .key {
+      height: 78px; width: 78px;
+      float: left; padding: 1px;
+      margin: 0 5px 5px 0;
+      -webkit-border-radius: 6px;
+    }
+
+    #keys .key.right { margin-right: 0; }
+
+    #keys .backlight {
+      height: 76px; width: 76px;
+      padding: 1px; margin: 0;
+      background: white;
+      -webkit-border-radius: 5px;
+    }
+
+    #keys .backlight .button {
+      height: 76px; width: 76px;
+      background: black;
+      -webkit-border-radius: 5px;
+    }
+
+    #keys a {
+      display: block; color: white;
+      height: 50px; width: 76px;
+      margin: 0; padding: 13px 0;
+      overflow: hidden;
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: bold; font-size: 50px;
+      line-height: 50px;
+      text-align: center;
+      text-decoration: none;
+      background: black;
+      -webkit-border-radius: 5px;
+    }
+
+    #keys .key.clear a, #keys .key.help a {
+      font-size: 20px;
+    }
+
+    #keys a:hover, #keys a:focus { background: #111; }
+    #keys a:active, #keys a.active { background: #222; }
+
+    /* Colour themes */
+
+    .green,
+    .green #display,
+    .green #keys .key {
+      background: green;
+      -webkit-box-shadow: 0 0 5px green;
+    }
+
+    .green #display .backlight .led {
+      background: green;
+    }
+
+    .green #keys a {
+      -webkit-text-shadow: 0 0 5px green;
+      -webkit-text-stroke: 1px green;
+    }
+
+    .blue,
+    .blue #display,
+    .blue #keys .key {
+      background: blue;
+      -webkit-box-shadow: 0 0 5px blue;
+    }
+
+    .blue #display .backlight .led {
+      background: blue;
+    }
+
+    .blue #keys a {
+      -webkit-text-shadow: 0 0 5px blue;
+      -webkit-text-stroke: 1px blue;
+    }
+
+    .blue #display img.success { display: inline; }
+
+    .red,
+    .red #display,
+    .red #keys .key {
+      background: red;
+      -webkit-box-shadow: 0 0 5px red;
+    }
+
+    .red #display .backlight .led {
+      background: red;
+    }
+
+    .red #keys a {
+      -webkit-text-shadow: 0 0 5px red;
+      -webkit-text-stroke: 1px red;
+    }
+
+    .red #display img.error { display: inline; }
+  </style>
+  
+  <script type="text/javascript" charset="utf-8">
+    // jQuery.bind.js
+
+    (function($) {
+
+      // Get jQuery duration
+      var calcDuration = function(duration) {
+        return $.fx.off ? 0 : typeof duration === "number" ? duration :
+          duration in $.fx.speeds ? $.fx.speeds[duration] : $.fx.speeds._default;
+      };
+
+      // Lets do both at the same time :)
+      $.each(['bindStop', 'bindThrottle'], function(i, name) {
+        $.fn[name] = function(eventType, eventData, handler, delay) {
+
+          // Work out the various parameters
+          if (!handler) {
+            handler = eventData;
+          } else if (!delay && typeof eventData !== 'object') {
+            delay = handler;
+            handler = eventData;
+          }
+
+          // Get delay
+          delay = calcDuration(delay);
+
+          return this.each(function() {
+            var self = this;
+            var timer;
+            var throttle;
+
+            $(self).bind(eventType, function(e) {
+              // We make a note of throttling and only run
+              // handler when not throttling
+              if (name === 'bindThrottle' && !throttle) {
+                handler.call(self, e);
+                throttle = setTimeout(function () {
+                  throttle = null;
+                }, delay);
+              }
+
+              // Every event clears previous timer
+              if (timer) {
+                clearTimeout(timer);
+              }
+
+              // Set a fresh timer
+              timer = setTimeout(function() {
+                handler.call(self, e);
+              }, delay);
+            });
+          });
+
+        };
+      });
+
+    }(this.jQuery));
+  
+    // Global variables
+
+    var keypad;
+    var form;
+    var display;
+    var displayLed;
+
+    var validKeys = [ 48,49,50,51,52,53,54,55,56,57,
+                      96,97,98,99,100,101,102,103,104,105 ];
+
+    var invalidKeys = [ 65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,
+                        0,32,61,107,108,109,110,111,186,187,188,189,190,191,192,219,220,221,222 ];
+                    
+    var backspace = 8;
+    var zero  = [48,96];
+    var one   = [49,97];
+    var two   = [50,98];
+    var three = [51,99];
+    var four  = [52,100];
+    var five  = [53,101];
+    var six   = [54,102];
+    var seven = [55,103];
+    var eight = [56,104];
+    var nine  = [57,105];
+
+    var interval;
+    var code;
+    var codeLength;
+
+    var defaultClass = 'green';
+    var successClass = 'blue';
+    var failureClass = 'red';
+
+    // jQuery
+
+    $(document).ready(function(){
+
+      // First things first, fetch the code length
+      $.ajax({
+        type: "GET",
+        url: "/",
+        dataType: "text",
+        success: function(data, textStatus, jqXHR){
+          codeLength = parseInt(data);
+        }
+      });
+
+      keypad = $('#keypad');
+      display = $('#display');
+      displayLed = display.find('.led');
+
+      // Map clicking on the keys to showing the number in the display
+      $('a').click(function(e){
+        e.preventDefault();
+        if ($('.clone').length < codeLength) {
+          var num = $(this).attr('rel');
+          if (num === 'clear' || num === 'help') {
+            if (num === 'clear') { reset(); } else
+            if (num === 'help') { showHelp(); }
+          } else {
+            displayNum(num);
+          }
+        }
+      });
+
+      // Disable the backspace key and
+      // map keyboard number keys to showing the number in the display
+      $(document).keydown(function(e) {
+        var charCode = (e.which) ? e.which : e.keyCode;
+        if (charCode === backspace) { e.preventDefault(); }
+        if (charCode === backspace && $('.clone').length > 0) {
+          $('.clone').last().remove();
+        } else if (validKeys.indexOf(charCode) >= 0 && $('.clone').length < codeLength) {
+          var n = charCode;
+          var num = '';
+          if (zero.indexOf(n) >= 0)       { num = 'zero' }
+          else if (one.indexOf(n) >= 0)   { num = 'one' }
+          else if (two.indexOf(n) >= 0)   { num = 'two' }
+          else if (three.indexOf(n) >= 0) { num = 'three' }
+          else if (four.indexOf(n) >= 0)  { num = 'four' }
+          else if (five.indexOf(n) >= 0)  { num = 'five' }
+          else if (six.indexOf(n) >= 0)   { num = 'six' }
+          else if (seven.indexOf(n) >= 0) { num = 'seven' }
+          else if (eight.indexOf(n) >= 0) { num = 'eight' }
+          else if (nine.indexOf(n) >= 0)  { num = 'nine' }
+          if (num !== '') {
+            $('#keys a[rel=' + num + ']').addClass('active');
+            displayNum(num);
+          }
+        }
+      });
+
+      $(document).keyup(function(e){ $('#keys a').removeClass('active'); });
+
+      // Pause before checking the code
+      $(document).bindStop('keydown', function(e) { checkCode(); }, 500);
+
+    });  
+
+    // Global functions
+
+    function displayNum(num) {
+      var anchor = $('#keys a[rel=' + num + ']');
+      if (!keypad.hasClass(successClass) && !keypad.hasClass(failureClass)) {
+        var led = display.find('.' + num + ':not(.clone)');
+        led.clone().addClass('clone').appendTo(displayLed).show();
+      }  
+    }
+
+    function checkCode() {
+      // Check that the code is the correct length, and check it via ajax
+      if ($('.clone').length == codeLength) {
+        // Now we need to manually build the code based on the digits on display
+        code = '';
+        $('.clone').each(function(){
+          code += $(this).attr('rel');
+        });
+        ajax();
+      }
+    }
+
+    function ajax() {
+      $.ajax({
+        type: "POST",
+        url: "/",
+        data: "code=" + code,
+        dataType: "text",
+        success: function(data, textStatus, jqXHR){
+          if (data === 'success') { showSuccess(); } else
+          if (data === 'failure') { showError(); }
+        }
+      });
+    }
+
+    function showSuccess() {
+      // Go blue, show SUCCESS
+      $('.clone').remove();
+      keypad.addClass(successClass);
+      setTimeout('window.location.reload()', 1000);
+    }
+
+    function showError() {
+      // Go red, show ERROR
+      $('.clone').remove();
+      keypad.addClass(failureClass);
+      setTimeout('reset()', 1000);
+    }
+
+    function reset() {
+      // Go green, clear display, restart interval
+      $('.clone').remove();
+      keypad.removeClass(failureClass).removeClass(successClass).addClass(defaultClass);
+    }
+
+    function showHelp() {
+      // console.log('You called for help!');
+    }
+  </script>
 </head>
 
 
