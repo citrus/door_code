@@ -21,6 +21,7 @@ Or in application.rb (Rails3) or environment.rb (Rails2):
 
 ## To Do
 
+* Example app (heroku, sinatra)
 * Allow specifying domains and paths to restrict access conditionally
 * Add no-js/no-base64 version
 * Add favicon?
