@@ -75,14 +75,14 @@ module DoorCode
     # Set a cookie for the correct value (server value may change)
     # Also set up Success message
     def confirm!
-      response.write 'success'
+      xhr? ? response.write('success') : response.redirect('/')
       response.set_cookie(cookie_name, {:value => supplied_code, :path => "/"})
     end
     
     # Delete and invalid cookies
     # Also set up Failure message
     def unconfirm!
-      response.write 'failure'
+      xhr? ? response.write('failure') : response.redirect('/')
       response.delete_cookie(supplied_code)
     end
     
@@ -104,7 +104,6 @@ module DoorCode
       p 'Loading DoorCode::RestrictedAccess'
       
       if post?
-        supplied_code = request.params['code']
         response['Content-Type'] = 'text/javascript' if xhr?
         validate_code! # Validate the user's code and set a cookie if valid
       else
