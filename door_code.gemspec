@@ -5,12 +5,11 @@ Gem::Specification.new do |s|
   s.name        = "door_code"
   s.version     = '0.0.1'
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Mike Fulcher"]
-  s.email       = ["mike@plan9design.co.uk"]
-  s.homepage    = ""
-  s.summary     = %q{Restrict access to your site with a 5-digit PIN code}
-  s.description = %q{Rack middleware which requires that visitors to the site enter a 5-digit PIN code to gain access. 
-                      Can (optionally) be applied only to specified URLs (eg to target only a development/staging server).}
+  s.authors     = ["Mike Fulcher", "Alex Neill"]
+  s.email       = ["mike@plan9design.co.uk", "alex.neill@gmail.com"]
+  s.homepage    = "https://github.com/6twenty/door_code"
+  s.summary     = %q{Restrict access to your site with a 3-6 digit PIN code}
+  s.description = %q{Rack middleware which requires that visitors to the site enter a 3-6 digit PIN code to gain access.}
 
   s.rubyforge_project = "door_code"
 
