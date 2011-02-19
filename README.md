@@ -23,7 +23,7 @@ Or in application.rb (Rails3) or environment.rb (Rails2):
 
 ## Demo
 
-There is a simple demo application running on Heroku at http://doorcodedemo.heroku.com. Log in using the default door code; 12345.
+There is a simple demo application running on Heroku at [http://doorcodedemo.heroku.com](http://doorcodedemo.heroku.com). Log in using the default door code; 12345.
 
 ## Notes
 
