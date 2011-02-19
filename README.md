@@ -33,6 +33,7 @@ There is a simple demo application running on Heroku at [http://doorcodedemo.her
 ## To Do
 
 * Write tests
+* Add cookie encryption?
 * Add HELP function (explains how the keypad works)
 * Allow specifying domains and paths to restrict access conditionally
 * Add no-js/no-base64 version
