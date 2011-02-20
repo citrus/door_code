@@ -4,7 +4,7 @@
 
 Install with Bundler:
 
-    gem 'door_code', '0.0.2'
+    gem 'door_code', '~> 0.0.3'
     
 In config.ru:
 
