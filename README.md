@@ -18,6 +18,12 @@ Bundler:
 In config.ru:
 
     use DoorCode::RestrictedAccess, :code => '12345'
+  
+    # to use a custom salt for cookie encryption
+    
+    use DoorCode::RestrictedAccess, :code => '12345', :salt => "my super secret code"
+  
+    
     
 In application.rb (Rails3) or environment.rb (Rails2):
 
@@ -35,5 +41,4 @@ There is a simple demo application running on Heroku at [http://doorcodedemo.her
 ## To Do
 
 * Allow specifying domains and paths to restrict access conditionally
-* Write tests
-* Add cookie encryption?
+* Write more tests
