@@ -12,7 +12,7 @@ class TestRestrictedAccess < Test::Unit::TestCase
   end
   
   def setup
-    # nothing
+    clear_cookies
   end
     
   should "require login" do
