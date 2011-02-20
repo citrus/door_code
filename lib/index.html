@@ -216,6 +216,38 @@
     }
 
     .red #display img.error { display: inline; }
+    
+    #helper {
+      height: 425px;
+    }
+    
+    #helper p, #helper ul, #helper ol, #helper li {
+      margin: 0; padding: 0;
+      color: white;
+      font-family: Helvetica, Arial, sans-serif;
+      text-indent: 0;
+      font-size: 12px; line-height: 12px;
+    }
+    
+    #helper ul, #helper ol {
+      padding: 0 0 0 20px;
+    }
+    
+    #helper li { margin-bottom: 5px;}
+    
+    #helper p {
+      font-size: 16px; line-height: 16px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    
+    #helper p.how { margin-top: 0; }
+    
+    #helper p.close { text-align: center; }
+    
+    #helper p.close a {
+      color: white;
+    }
   </style>
   
   <script type="text/javascript" charset="utf-8">
@@ -227,6 +259,9 @@
     var form;
     var display;
     var displayLed;
+    
+    var helperContainer;
+    var keypadContainer;
 
     var validKeys = [ 48,49,50,51,52,53,54,55,56,57,
                       96,97,98,99,100,101,102,103,104,105 ];
@@ -248,7 +283,7 @@
 
     var interval;
     var code;
-    var codeLength = {{codeLength}};
+    var codeLength = 5;//{{codeLength}};
 
     var defaultClass = 'green';
     var successClass = 'blue';
@@ -279,15 +314,18 @@
       keypad = $('#keypad');
       display = $('#display');
       displayLed = display.find('.led');
+      
+      helperContainer = $('#helper');
+      keypadContainer = $('#display, #keys');
 
       // Map clicking on the keys to showing the number in the display
-      $('a').click(function(e){
+      $('#keys a').click(function(e){
         e.preventDefault();
         if ($('.clone').length < codeLength) {
           var num = $(this).attr('rel');
           if (num === 'clear' || num === 'help') {
             if (num === 'clear') { reset(); } else
-            if (num === 'help') { showHelp(); }
+            if (num === 'help') { toggleHelp(); }
           } else {
             displayNum(num);
             checkCode();
@@ -324,6 +362,11 @@
       });
 
       $(document).keyup(function(e){ $('#keys a').removeClass('active'); });
+      
+      $('.close a').click(function(e) {
+        e.preventDefault();
+        toggleHelp();        
+      });
 
     });  
 
@@ -382,8 +425,14 @@
       keypad.removeClass(failureClass).removeClass(successClass).addClass(defaultClass);
     }
 
-    function showHelp() {
-      // console.log('You called for help!');
+    function toggleHelp() {
+      if (helperContainer.is(':visible')) {
+        helperContainer.hide();
+        keypadContainer.show();
+      } else {
+        keypadContainer.hide();
+        helperContainer.show();
+      }
     }
   </script>
 </head>
@@ -399,6 +448,30 @@
   <div id="keypad" class="green" style="display:none;">
     <div id="backlight">
       <div id="frame">
+        <!-- #helper only shown when the HELP key is pressed -->
+        <div id="helper" style="display:none;">
+          <p class="how">
+            How to use this keypad:
+          </p>
+          <ol>
+            <li>Using the code provided to you, enter the digits using either your keyboard using the number keys, or your mouse by clicking the numbers on the keypad</li>
+            <li>When you have entered the correct number of digits, the keypad will confirm if you have entered the correct code</li>
+            <li>On entering the correct code, the keypad will flash blue with the message "SUCCESS" displayed on the keypad. You will then be redirected to the correct page of the website</li>
+            <li>On entering an incorrect code, the keypad will flash red with the message "ERROR" displayed on the keypad. The keypad will then reset, allowing you to re-enter the code</li>
+          </ol>
+          <p class="tips">
+            Tips:
+          </p>
+          <ul>
+            <li>The code will only be checked for validity once the correct number of digits have been entered</li>
+            <li>Use the backspace key on your keyboard to erase the last digit entered</li>
+            <li>Use the clear key on the keypad to clear the current code and reset the keypad</li>
+          </ul>
+          <p class="close">
+            <a href="#">Close</a>
+          </p>
+        </div>
+        
         <div id="display">
           <div class="backlight">
             <div class="led">
