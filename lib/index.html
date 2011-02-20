@@ -427,11 +427,13 @@
 
     function toggleHelp() {
       if (helperContainer.is(':visible')) {
-        helperContainer.hide();
-        keypadContainer.show();
+        helperContainer.fadeOut(250, function(){
+          keypadContainer.fadeIn(250);
+        });
       } else {
-        keypadContainer.hide();
-        helperContainer.show();
+        keypadContainer.fadeOut(250, function(){
+          helperContainer.fadeIn(250);
+        });
       }
     }
   </script>
