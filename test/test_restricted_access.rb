@@ -1,5 +1,7 @@
 require 'helper'
 
+# '12345' encrypted with the default salt
+DEFAULT_CODE = '9fa483ac55e30318a84f0046365a21021a409117'
 
 class TestRestrictedAccess < Test::Unit::TestCase
   
@@ -9,22 +11,49 @@ class TestRestrictedAccess < Test::Unit::TestCase
     TestingApp.new
   end
   
+  def setup
+    # nothing
+  end
+    
   should "require login" do
     get "/"
-    
-    assert_equal 401, last_response.status
-    
+    assert_equal 200, last_response.status
     assert last_response.body.include?("Authorized Personnel Only")
-    
-    
-    
-    #puts last_response.status
-    #puts "----"
-    
-    #puts last_response.inspect
-    
-    #assert last_response.status
-    #assert last_response.body.include?("Cool")
   end
 
+  should "validate login" do
+    post "/", { "code" => "12345" }
+    assert_equal 302, last_response.status
+    
+    follow_redirect!    
+    
+    assert_equal 200, last_response.status
+    assert last_response.body.include?("Logged In")
+    assert_equal DEFAULT_CODE, rack_mock_session.cookie_jar['door_code']
+  end
+
+
+  context "when cookie exists" do
+
+    setup do
+      set_cookie("door_code=#{DEFAULT_CODE}")
+    end
+  
+    should "allow authorized cookies" do
+      get "/"
+      assert_equal 200, last_response.status
+      assert last_response.body.include?("Logged In")
+    end
+  
+    should "logout" do
+      get "/logout"
+      assert_equal 302, last_response.status
+      
+      follow_redirect!
+    
+      assert_equal 200, last_response.status
+      assert last_response.body.include?("Authorized Personnel Only")
+    end
+    
+  end
 end

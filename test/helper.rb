@@ -7,12 +7,20 @@ require 'door_code'
 require 'sinatra/base'
 
 
+module Rack
+  module Test
+    DEFAULT_HOST='localhost'
+  end
+end
+
 class TestingApp < Sinatra::Base
+
+  #set :sessions, false
 
   use DoorCode::RestrictedAccess, :code => '12345'
 
   get '/' do
-    'The Coolness'
+    'Logged In!'
   end
   
   get '/logout' do

@@ -20,4 +20,8 @@ Gem::Specification.new do |s|
   
   # Runtime
   s.add_runtime_dependency 'rack'
+  
+  s.add_development_dependency 'shoulda', '2.11.3'
+  s.add_development_dependency 'rack-test', '0.5.7'
+  
 end
