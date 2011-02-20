@@ -1,6 +1,13 @@
-### DoorCode. Restrict access with a 5-digit PIN code.
+Door Code
+=========
+
+### Restrict access with a 3-6 digit PIN code.
 
 ## Installation
+
+Via Rubygems:
+
+    (sudo) gem install door_code
 
 Install with Bundler:
 
@@ -14,6 +21,10 @@ In application.rb (Rails3) or environment.rb (Rails2):
 
     config.middleware.use DoorCode::RestrictedAccess, :code => '12345'
 
+## Demo
+
+There is a simple demo application running on Heroku at [http://doorcodedemo.heroku.com](http://doorcodedemo.heroku.com). Log in using the default door code: `12345`
+
 ## Notes
 
 * The default code is '12345'
@@ -23,3 +34,5 @@ In application.rb (Rails3) or environment.rb (Rails2):
 
 * Example app (heroku, sinatra)
 * Allow specifying domains and paths to restrict access conditionally
+* Write tests
+* Add cookie encryption?
