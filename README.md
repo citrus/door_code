@@ -5,13 +5,15 @@ Door Code
 
 ## Installation
 
-Via Rubygems:
+Rubygems:
 
     (sudo) gem install door_code
 
-Install with Bundler:
+Bundler:
 
     gem 'door_code', '~> 0.0.3'
+
+### Then
     
 In config.ru:
 
@@ -32,7 +34,6 @@ There is a simple demo application running on Heroku at [http://doorcodedemo.her
 
 ## To Do
 
-* Example app (heroku, sinatra)
 * Allow specifying domains and paths to restrict access conditionally
 * Write tests
 * Add cookie encryption?
