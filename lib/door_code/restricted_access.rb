@@ -49,10 +49,6 @@ module DoorCode
       request.cookies[cookie_name]
     end
     
-    # Encrypts and saves the supplied code to a cookie
-    def save_to_cookie
-      response.set_cookie(cookie_name, { :value => supplied_code, :path => "/" })
-    end
     
     # Rack::Request wrapper around @env
     def request
@@ -90,7 +86,7 @@ module DoorCode
     # Also set up Success message
     def confirm!
       request.xhr? ? response.write('success') : response.redirect('/')
-      save_to_cookie
+      response.set_cookie(cookie_name, { :value => supplied_code, :path => "/" })
     end
     
     # Delete and invalid cookies
