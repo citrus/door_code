@@ -13,17 +13,15 @@ Bundler:
 
     gem 'door_code', '~> 0.0.5'
 
-### Then
+## Configuration
     
-In config.ru:
+In config.ru or within your Sinatra app:
 
     use DoorCode::RestrictedAccess, :code => '12345'
   
     # to use a custom salt for cookie encryption
     
     use DoorCode::RestrictedAccess, :code => '12345', :salt => "my super secret code"
-  
-    
     
 In application.rb (Rails3) or environment.rb (Rails2):
 
