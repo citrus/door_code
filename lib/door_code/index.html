@@ -283,7 +283,10 @@
 
     var interval;
     var code;
-    var codeLength = {{codeLength}};
+    var minLength = 3;
+    var maxLength = 6;
+    
+    var clones;
 
     var defaultClass = 'green';
     var successClass = 'blue';
@@ -340,7 +343,7 @@
         if (charCode === backspace) { e.preventDefault(); }
         if (charCode === backspace && $('.clone').length > 0) {
           $('.clone').last().remove();
-        } else if (validKeys.indexOf(charCode) >= 0 && $('.clone').length < codeLength) {
+        } else if (validKeys.indexOf(charCode) >= 0 && $('.clone').length <= maxLength) {
           var n = charCode;
           var num = '';
           if (zero.indexOf(n) >= 0)       { num = 'zero' }
@@ -382,12 +385,11 @@
 
     function checkCode() {
       // Check that the code is the correct length, and check it via ajax
-      if ($('.clone').length == codeLength) {
+      clones = $('.clone');
+      if (clones.length >= minLength && clones.length <= maxLength) {
         // Now we need to manually build the code based on the digits on display
         code = '';
-        $('.clone').each(function(){
-          code += $(this).attr('rel');
-        });
+        $('.clone').each(function(){ code += $(this).attr('rel'); });
         ajax();
       }
     }
@@ -400,7 +402,7 @@
         dataType: "text",
         success: function(data, textStatus, jqXHR){
           if (data === 'success') { showSuccess(); } else
-          if (data === 'failure') { showError(); }
+          if (data === 'failure' && clones.length == maxLength) { showError(); }
         }
       });
     }

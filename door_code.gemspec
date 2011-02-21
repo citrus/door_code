@@ -3,10 +3,10 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "door_code"
-  s.version     = '0.0.3'
+  s.version     = '0.0.4'
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Mike Fulcher", "Alex Neill"]
-  s.email       = ["mike@plan9design.co.uk", "alex.neill@gmail.com"]
+  s.authors     = ["Mike Fulcher", "Alex Neill", "Spencer Steffen"]
+  s.email       = ["mike@plan9design.co.uk", "alex.neill@gmail.com", "spencer@citrusme.com"]
   s.homepage    = "https://github.com/6twenty/door_code"
   s.summary     = %q{Restrict access to your site with a 3-6 digit PIN code}
   s.description = %q{Rack middleware which requires that visitors to the site enter a 3-6 digit PIN code to gain access.}

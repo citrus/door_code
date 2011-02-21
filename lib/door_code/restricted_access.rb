@@ -24,7 +24,6 @@ module DoorCode
         # Means the supplied code contained non-digits, so revert to default
         parsed_code = DEFAULT_CODE
       end
-      @code_length = parsed_code.length.to_s
       Digest::SHA1.hexdigest("--#{@salt}--#{parsed_code}--")
     end
     
@@ -36,8 +35,6 @@ module DoorCode
       end
       salt
     end
-    
-    
     
     # Name of the cookie
     def cookie_name
@@ -86,7 +83,7 @@ module DoorCode
     # Also set up Success message
     def confirm!
       request.xhr? ? response.write('success') : response.redirect('/')
-      response.set_cookie(cookie_name, { :value => supplied_code, :path => "/" })
+      response.set_cookie(cookie_name, { :value => supplied_code, :path => "/", :expire_after => (24*60*60) })
     end
     
     # Delete and invalid cookies
@@ -94,11 +91,6 @@ module DoorCode
     def unconfirm!
       request.xhr? ? response.write('failure') : response.redirect('/')
       response.delete_cookie(supplied_code)
-    end
-    
-    # Returns the length of the original unencrypted code
-    def code_length
-      @code_length
     end
     
     # Creates instances of Rack::Request and Rack::Response
@@ -124,8 +116,7 @@ module DoorCode
         #response.status = 401
     
         index = ::File.read(::File.dirname(__FILE__) + '/index.html')
-        index_with_code_length = index.gsub(/\{\{codeLength\}\}/, code_length)
-        response.write index_with_code_length
+        response.write index
       end
             
       # Render response
