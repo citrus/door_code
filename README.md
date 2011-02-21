@@ -11,7 +11,7 @@ Rubygems:
 
 Bundler:
 
-    gem 'door_code', '~> 0.0.3'
+    gem 'door_code', '~> 0.0.5'
 
 ### Then
     
