@@ -324,7 +324,7 @@
       // Map clicking on the keys to showing the number in the display
       $('#keys a').click(function(e){
         e.preventDefault();
-        if ($('.clone').length < codeLength) {
+        if ($('.clone').length <= maxLength) {
           var num = $(this).attr('rel');
           if (num === 'clear' || num === 'help') {
             if (num === 'clear') { reset(); } else
