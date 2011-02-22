@@ -1,4 +1,19 @@
 module DoorCode
+  
+  class << self
+    
+    def salt
+      @salt ||= generate_random_salt
+    end
+    
+    # Generate a random salt for the encryption
+    def generate_random_salt
+      o =  [('a'..'z'),('A'..'Z')].map{|i| i.to_a}.flatten
+      string = (0..50).map{ o[rand(o.length)]  }.join
+    end
+    
+  end
+
   class RestrictedAccess
     
     MIN_LENGTH = 3
@@ -42,14 +57,9 @@ module DoorCode
       parsed_code
     end
     
+    # 
     def salt
-      @salt ||= generate_random_salt
-    end
-    
-    # Generate a random salt for the encryption
-    def generate_random_salt
-      o =  [('a'..'z'),('A'..'Z')].map{|i| i.to_a}.flatten
-      string = (0..50).map{ o[rand(o.length)]  }.join
+      @salt ||= DoorCode.salt
     end
     
     # Name of the cookie

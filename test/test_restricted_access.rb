@@ -1,7 +1,7 @@
 require 'helper'
 
 # '12345' encrypted with the default salt
-DEFAULT_CODE = '9fa483ac55e30318a84f0046365a21021a409117'
+DEFAULT_CODE = Digest::SHA1.hexdigest("--#{DoorCode.salt}--#{DoorCode::RestrictedAccess::DEFAULT_CODE}--")
 
 class TestRestrictedAccess < Test::Unit::TestCase
   
@@ -45,7 +45,7 @@ class TestRestrictedAccess < Test::Unit::TestCase
       assert last_response.body.include?("Logged In")
     end
   
-    should "logout" do
+    should "logout clearing cookie" do
       get "/logout"
       assert_equal 302, last_response.status
       
