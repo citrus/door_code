@@ -11,17 +11,20 @@ Rubygems:
 
 Bundler:
 
-    gem 'door_code', '~> 0.0.5'
+    gem 'door_code', '~> 0.0.6'
 
 ## Configuration
     
 In config.ru or within your Sinatra app:
 
-    use DoorCode::RestrictedAccess, :code => '12345'
-  
-    # to use a custom salt for cookie encryption
-    
-    use DoorCode::RestrictedAccess, :code => '12345', :salt => "my super secret code"
+    use DoorCode::RestrictedAccess, :code => '12345' # code must be 3-6 digits
+
+Optional options:
+
+    use DoorCode::RestrictedAccess,
+      :code => '12345', # set a single valid code
+      :codes => ['12345','6789'], # set multiple valid codes
+      :salt => "my super secret code" # use a custom salt for cookie encryption
     
 In application.rb (Rails3) or environment.rb (Rails2):
 
@@ -34,9 +37,10 @@ There is a simple demo application running on Heroku at [http://doorcodedemo.her
 ## Notes
 
 * The default code is '12345'
-* If the code passed to DoorCode is invalid (eg contains non-digits), the default code will be assigned
+* All options passed to DoorCode are optional. If no valid codes are supplied, the default code will be activated
 
 ## To Do
 
 * Allow specifying domains and paths to restrict access conditionally
+* API for customization
 * Write more tests

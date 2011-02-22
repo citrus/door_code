@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "door_code"
-  s.version     = '0.0.5'
+  s.version     = '0.0.6'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Mike Fulcher", "Alex Neill", "Spencer Steffen"]
   s.email       = ["mike@plan9design.co.uk", "alex.neill@gmail.com", "spencer@citrusme.com"]
