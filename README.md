@@ -24,7 +24,6 @@ Optional options:
     use DoorCode::RestrictedAccess,
       :code => '12345', # set a single valid code
       :codes => ['12345','6789'], # set multiple valid codes
-      :salt => "my super secret code" # use a custom salt for cookie encryption
     
 In application.rb (Rails3) or environment.rb (Rails2):
 
