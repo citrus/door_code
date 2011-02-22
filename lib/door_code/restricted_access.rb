@@ -9,29 +9,44 @@ module DoorCode
     def initialize app, options={}
       @app = app
       @salt = parse_salt(options[:salt])
-      @code = parse_code(options[:code])
+      # The code or codes can be supplied as either a single string or an array using either
+      # the ":code" or ":codes" key. ":codes" trumps ":code" if both are supplied
+      @codes = options[:codes] ? parse_codes(options[:codes]) : parse_codes(options[:code])
     end
     
-    # Ensures the code is good & valid, otherwise
-    # reverts to the default
+    # Filters the supplied codes to ensure they are valid, and sets the DEFAULT_CODE if no
+    # valid codes are detected
+    def parse_codes(codes)
+      parsed_codes = codes.respond_to?(:any?) ? codes.map { |c| parse_code(c) } : [parse_code(codes)]
+      # If there are any valid codes supplied which are unique and valid, 
+      # strip the default code out in order to circumvent a security hole
+      if parsed_codes.compact.uniq.empty?
+        parsed_codes << DEFAULT_CODE
+        p "DoorCode: no valid codes detected - activating default code"
+      end
+      parsed_codes.compact.uniq.map { |c| Digest::SHA1.hexdigest("--#{@salt}--#{c}--") }
+    end
+    
+    # Checks that the code provided is valid, returning nil if not
     def parse_code(code)
       parsed_code = code.to_s.gsub(/\D/, '')
-      if parsed_code == code
+      if parsed_code == code && (code.length < MIN_LENGTH || code.length > MAX_LENGTH)
         # Means the supplied code contains only digits, which is good
         # Just need to check that the code length is valid
-        parsed_code = DEFAULT_CODE if code.length < MIN_LENGTH || code.length > MAX_LENGTH
-      else
+        parsed_code = nil
+        p "DoorCode: invalid PIN code detected"
+      elsif parsed_code != code
         # Means the supplied code contained non-digits, so revert to default
-        parsed_code = DEFAULT_CODE
+        parsed_code = nil
+        p "DoorCode: invalid PIN code detected"
       end
-      Digest::SHA1.hexdigest("--#{@salt}--#{parsed_code}--")
+      parsed_code
     end
-    
     
     # Ensures a salt is supplied, otherwise set to default
     def parse_salt(salt)
       if 0 < salt.to_s.length
-        salt = Digest::SHA1.hexdigest("Door Code Secret Key")
+        salt = Digest::SHA1.hexdigest("_door_code_secret_key")
       end
       salt
     end
@@ -64,7 +79,7 @@ module DoorCode
     
     # Is the supplied code valid for the current area
     def valid_code?(code)
-      @code == code
+      @codes.include?(code)
     end
     
     # Check if the supplied code is valid;
@@ -105,7 +120,7 @@ module DoorCode
       build_rack_objects
       
       return @app.call(env) if confirmed?
-      p 'Loading DoorCode::RestrictedAccess'
+      p 'DoorCode: Unauthorized personnel detected'
       
       if request.post?
         response['Content-Type'] = 'text/javascript' if request.xhr?
