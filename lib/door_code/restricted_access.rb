@@ -2,6 +2,7 @@ module DoorCode
   
   class << self
     
+    # Returns the salt or a random one
     def salt
       @salt ||= generate_random_salt
     end
@@ -57,7 +58,7 @@ module DoorCode
       parsed_code
     end
     
-    # 
+    # Returns the salt or creates one
     def salt
       @salt ||= DoorCode.salt
     end
