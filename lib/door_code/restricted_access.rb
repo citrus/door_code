@@ -8,7 +8,6 @@ module DoorCode
     
     def initialize app, options={}
       @app = app
-      @salt = parse_salt(options[:salt])
       # The code or codes can be supplied as either a single string or an array using either
       # the ":code" or ":codes" key. ":codes" trumps ":code" if both are supplied
       @codes = options[:codes] ? parse_codes(options[:codes]) : parse_codes(options[:code])
@@ -24,7 +23,7 @@ module DoorCode
         parsed_codes << DEFAULT_CODE
         p "DoorCode: no valid codes detected - activating default code"
       end
-      parsed_codes.compact.uniq.map { |c| Digest::SHA1.hexdigest("--#{@salt}--#{c}--") }
+      parsed_codes.compact.uniq.map { |c| Digest::SHA1.hexdigest("--#{salt}--#{c}--") }
     end
     
     # Checks that the code provided is valid, returning nil if not
@@ -43,12 +42,14 @@ module DoorCode
       parsed_code
     end
     
-    # Ensures a salt is supplied, otherwise set to default
-    def parse_salt(salt)
-      if 0 < salt.to_s.length
-        salt = Digest::SHA1.hexdigest("_door_code_secret_key")
-      end
-      salt
+    def salt
+      @salt ||= generate_random_salt
+    end
+    
+    # Generate a random salt for the encryption
+    def generate_random_salt
+      o =  [('a'..'z'),('A'..'Z')].map{|i| i.to_a}.flatten
+      string = (0..50).map{ o[rand(o.length)]  }.join
     end
     
     # Name of the cookie
@@ -74,7 +75,7 @@ module DoorCode
     
     # Encrypted code supplied from user
     def supplied_code
-      Digest::SHA1.hexdigest("--#{@salt}--#{request.params['code']}--")
+      Digest::SHA1.hexdigest("--#{salt}--#{request.params['code']}--")
     end
     
     # Is the supplied code valid for the current area
