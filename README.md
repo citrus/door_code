@@ -11,7 +11,7 @@ Rubygems:
 
 Bundler:
 
-    gem 'door_code', '~> 0.0.6'
+    gem 'door_code', '~> 0.0.7'
 
 ## Configuration
     
